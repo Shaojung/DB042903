@@ -11,8 +11,16 @@ import android.support.annotation.IntDef;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 public class MyService extends Service {
     Handler handler = new Handler();
+    FirebaseDatabase database;
+    DatabaseReference myRef;
     int i;
     public MyService() {
         i = 0;
@@ -64,6 +72,27 @@ public class MyService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("SER", "on Start Command");
         handler.post(showTime);
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("svalue");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Context context;
+                context = getApplicationContext();
+                NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext());
+                builder.setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("資料改變")
+                        .setContentText("資料改變, 改為:" + dataSnapshot.getValue());
+                Notification notification = builder.build();
+                manager.notify(3122, notification);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         return super.onStartCommand(intent, flags, startId);
     }
 
