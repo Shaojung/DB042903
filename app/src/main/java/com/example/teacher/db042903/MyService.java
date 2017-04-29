@@ -2,6 +2,7 @@ package com.example.teacher.db042903;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -79,11 +80,17 @@ public class MyService extends Service {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Context context;
                 context = getApplicationContext();
+                String d = dataSnapshot.getValue().toString();
+                Intent it = new Intent(context, DataActivity.class);
+                it.putExtra("data", d);
+                PendingIntent pi = PendingIntent.getActivity(context, 555, it, PendingIntent.FLAG_UPDATE_CURRENT);
                 NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext());
                 builder.setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle("資料改變")
-                        .setContentText("資料改變, 改為:" + dataSnapshot.getValue());
+                        .setContentText("資料改變, 改為:" + d)
+                        .setContentIntent(pi);
+
                 Notification notification = builder.build();
                 manager.notify(3122, notification);
             }
