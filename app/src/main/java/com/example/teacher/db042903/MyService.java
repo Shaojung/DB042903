@@ -42,4 +42,10 @@ public class MyService extends Service {
         handler.post(showTime);
         return super.onStartCommand(intent, flags, startId);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(showTime);
+    }
 }
